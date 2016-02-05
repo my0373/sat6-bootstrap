@@ -38,7 +38,10 @@ if not MAC:
     MAC = "00:00:00:00:00:00"
 
 HOSTNAME  = socket.getfqdn()
-RELEASE   = platform.linux_distribution()[1]
+try:
+    RELEASE   = platform.linux_distribution()[1]
+except AttributeError:
+    RELEASE   = platform.dist()[1]
 API_PORT  = 443
 
 parser = OptionParser()
