@@ -264,8 +264,12 @@ def return_matching_hg_id(hg_name):
     # Given a hostgroup name, find its id
     myurl = "https://" + SAT6_FQDN + ":" + API_PORT + "/api/v2/hostgroups/?" + urlencode([('search', 'title=%s' % hg_name)])
     hostgroup = get_json(myurl)
-    hg_id = hostgroup['results'][0]['id']
-    return hg_id
+    if len(hostgroup['results']) == 1:
+        hg_id = hostgroup['results'][0]['id']
+        return hg_id
+    else:
+        print_error("Could not find hostgroup %s" % hg_name)
+        sys.exit(2)
 
 def return_puppetenv_for_hg(hg_id):
     myurl = "https://" + SAT6_FQDN + ":" + API_PORT + "/api/v2/hostgroups/" + str(hg_id)
@@ -287,9 +291,13 @@ def return_matching_host_id(hostname):
 def return_matching_location(location):
     # Given a location, find its id
     myurl = "https://" + SAT6_FQDN + ":" + API_PORT + "/api/v2/locations/?" + urlencode([('search', 'title=%s' % location)])
-    location = get_json(myurl)
-    loc_id = location['results'][0]['id']
-    return loc_id
+    loc = get_json(myurl)
+    if len(loc['results']) == 1:
+        loc_id = loc['results'][0]['id']
+        return loc_id
+    else:
+        print_error("Could not find location %s" % location)
+        sys.exit(2)
 
 def return_matching_org(organization):
     # Given an org, find its id.
@@ -299,6 +307,8 @@ def return_matching_org(organization):
         if org['name'] == organization:
             org_id = org['id']
             return org_id
+    print_error("Could not find organization %s" % organization)
+    sys.exit(2)
 
 def return_matching_org_label(organization):
     # Given an org name, find its label - required by subscription-manager
